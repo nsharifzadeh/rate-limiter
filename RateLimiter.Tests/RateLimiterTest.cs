@@ -108,5 +108,18 @@ public class RateLimiterTest
         Assert.That(_rateLimiter.IsAllowed("client1"), Is.True);
         Assert.That(_rateLimiter.IsAllowed("client1"), Is.True);
         Assert.That(_rateLimiter.IsAllowed("client1"), Is.False);
-    } 
+    }
+    [Test]
+    public async Task RequestCertainTimeHasPassedAsync()
+    {
+        ApiRateLimiter _timeHasPassed = new ApiRateLimiter(TimeSpan.FromSeconds(30));
+        Assert.That(_timeHasPassed.IsAllowed("client1"), Is.True);
+        Assert.That(_timeHasPassed.IsAllowed("client1"), Is.False);
+
+        await Task.Delay(TimeSpan.FromSeconds(30));
+        
+        // 30 seconds must pass before the next request is allpwed
+        Assert.That(_timeHasPassed.IsAllowed("client1"), Is.True);
+
+    }
 }

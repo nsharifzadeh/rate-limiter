@@ -57,6 +57,25 @@ namespace RateLimiter
                 }
             };
         }
+        public static RateLimitRule CreateCertainTimespanPassed(TimeSpan timeWindow)
+        {
+            return (clientId, timestamp) =>
+            {
+                var clientInfo = _clients.GetOrAdd(clientId, _ => new ClientRequestInfo());
+
+                lock (clientInfo.Lock)
+                {
+                    // Remove expired requests
+                    if (clientInfo.RequestTimestamps.Count <= 0 || timestamp - clientInfo.RequestTimestamps.Last().ToUniversalTime() >= timeWindow)
+                    {
+                        clientInfo.RequestTimestamps.Add(timestamp);
+                        return true;
+                    }
+
+                    return false;
+                }
+            };
+        }
     }
 
     internal class ClientRequestInfo

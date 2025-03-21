@@ -12,6 +12,14 @@ namespace RateLimiter
         {
                 AddRule(SampleRules.CreateTimeWindowRule(maxRequests, TimeSpan.FromSeconds(timeWindowSeconds)));
         }
+        public ApiRateLimiter(TimeSpan hasPassed)
+        {
+            AddRule(SampleRules.CreateCertainTimespanPassed(hasPassed));
+        }
+        public ApiRateLimiter(int maxCallsinADay)
+        {
+            AddRule(SampleRules.CreateDailyQuotaRule(maxCallsinADay));
+        }
 
         public void AddRule(RateLimitRule rule)
         {
